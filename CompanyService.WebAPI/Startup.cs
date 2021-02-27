@@ -1,3 +1,4 @@
+using CompanyService.WebAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,11 @@ namespace CompanyService.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {			
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddControllers();
+            services.AddControllers(setupAction => {
+                setupAction.ReturnHttpNotAcceptable = true;
+            });
+            services.AddTransient<ICompaniesRepository, CompaniesRepository>();
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

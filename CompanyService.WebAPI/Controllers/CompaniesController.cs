@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CompanyService.WebAPI.Models;
+using CompanyService.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyService.WebAPI.Controllers
@@ -9,10 +11,24 @@ namespace CompanyService.WebAPI.Controllers
 
     public class CompaniesController : ControllerBase
     {
-        [HttpPost("")]
-        public async Task<IActionResult> Validate(Company company)
+        private readonly ICompaniesRepository _companiesRepository;
+        public CompaniesController(ICompaniesRepository companiesRepository)
         {
-            return Ok();
+            _companiesRepository = companiesRepository ?? throw new ArgumentNullException(nameof(companiesRepository));
+        }
+
+        [HttpPost("")]
+        public async Task<IActionResult> Validate([FromBody] Company company)
+        {
+            string validCompany = _companiesRepository.Validate(company);
+            if(validCompany == string.Empty)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(validCompany);
+            }
         }
     }
 }
